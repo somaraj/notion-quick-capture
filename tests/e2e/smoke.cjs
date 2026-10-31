@@ -21,6 +21,9 @@ async function openPage(page, scenario) {
         show: false,
         webPreferences: {
             offscreen: true,
+            // Hidden windows get throttled timers and animation frames, which stalls UI
+            // transitions on slow CI runners; the real panel is visible, so never throttled
+            backgroundThrottling: false,
             sandbox: true,
             contextIsolation: true,
             preload: path.join(__dirname, 'stub-preload.cjs'),
