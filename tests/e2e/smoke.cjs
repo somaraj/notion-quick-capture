@@ -69,7 +69,15 @@ const tests = {
         assert.equal(rendered.h1, 1, 'heading rendered in the editor');
         assert.ok(rendered.li >= 3, 'list items rendered in the editor');
 
-        await run(`document.querySelector('.save-btn').click();`);
+        // The "Saved to" notice is transient (it fades in after the hints fade out, then goes
+        // away with the panel), so record it whenever it appears instead of sampling it later
+        await run(`
+            window.__notices = [];
+            new MutationObserver(() => {
+                const text = document.querySelector('.status-success')?.textContent;
+                if (text && !window.__notices.includes(text)) window.__notices.push(text);
+            }).observe(document.body, { childList: true, subtree: true, characterData: true });
+            document.querySelector('.save-btn').click();`);
         await sleep(400);
         const capture = events.find((e) => e.kind === 'capture');
         assert.ok(capture, 'capture was sent');
@@ -84,17 +92,16 @@ const tests = {
         assert.equal(blocks[1].bulleted_list_item.children[0].type, 'bulleted_list_item');
         assert.equal(blocks[3].code.language, 'typescript');
 
-        // The footer swaps in the notice after the hints fade out (Transition mode="out-in"),
-        // which can be slow in an offscreen window, so wait for it rather than sleeping
-        const notice = await run(
-            `for (let i = 0; i < 50; i++) {
-               const text = document.querySelector('.status-success')?.textContent;
-               if (text) return text;
+        const { notice, footer } = await run(
+            `for (let i = 0; i < 50 && !window.__notices.length; i++) {
                await new Promise((r) => setTimeout(r, 100));
              }
-             return '';`,
+             return {
+               notice: window.__notices[0] ?? '',
+               footer: document.querySelector('.panel-footer')?.textContent.trim() ?? '',
+             };`,
         );
-        assert.match(notice, /Saved to Inbox/);
+        assert.match(notice, /Saved to Inbox/, `no success notice; footer shows: "${footer}"`);
         assert.match(notice, /Open in Notion/);
         assert.deepEqual(problems, []);
         win.destroy();
