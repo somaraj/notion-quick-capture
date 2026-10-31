@@ -53,14 +53,21 @@ jobs:
       - run: npm run build
 
       - name: Package and upload to the draft release
-        run: npx electron-builder --config electron-builder.config.cjs --publish always
+        shell: bash
+        # Code signing is optional. Without these secrets the installers are unsigned
+        # (see docs/RELEASING.md for what that means for users and how to add signing).
+        # CSC_LINK is only exported when set: electron-builder treats an empty value as a path.
+        run: |
+          if [ -n "$SIGN_CSC_LINK" ]; then
+            export CSC_LINK="$SIGN_CSC_LINK" CSC_KEY_PASSWORD="$SIGN_CSC_KEY_PASSWORD"
+          else
+            export CSC_IDENTITY_AUTO_DISCOVERY=false
+          fi
+          npx electron-builder --config electron-builder.config.cjs --publish always
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # Code signing is optional. Without these secrets the installers are unsigned
-          # (see docs/RELEASING.md for what that means for users and how to add signing).
-          CSC_IDENTITY_AUTO_DISCOVERY: ${{ secrets.MAC_CSC_LINK != '' && 'true' || 'false' }}
-          CSC_LINK: ${{ runner.os == 'macOS' && secrets.MAC_CSC_LINK || secrets.WIN_CSC_LINK }}
-          CSC_KEY_PASSWORD: ${{ runner.os == 'macOS' && secrets.MAC_CSC_KEY_PASSWORD || secrets.WIN_CSC_KEY_PASSWORD }}
+          SIGN_CSC_LINK: ${{ runner.os == 'macOS' && secrets.MAC_CSC_LINK || runner.os == 'Windows' && secrets.WIN_CSC_LINK || '' }}
+          SIGN_CSC_KEY_PASSWORD: ${{ runner.os == 'macOS' && secrets.MAC_CSC_KEY_PASSWORD || runner.os == 'Windows' && secrets.WIN_CSC_KEY_PASSWORD || '' }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
