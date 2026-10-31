@@ -1,0 +1,94 @@
+{
+  "name": "notion-quick-capture",
+  "productName": "Notion Quick Capture",
+  "version": "1.0.0",
+  "description": "Capture notes to Notion from anywhere with a global keyboard shortcut",
+  "private": true,
+  "main": "dist-main/main/index.js",
+  "author": {
+    "name": "Somaraj",
+    "url": "https://github.com/somaraj"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/somaraj/notion-quick-capture#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/somaraj/notion-quick-capture.git"
+  },
+  "bugs": {
+    "url": "https://github.com/somaraj/notion-quick-capture/issues"
+  },
+  "keywords": [
+    "notion",
+    "quick-capture",
+    "electron",
+    "notes",
+    "productivity",
+    "global-shortcut"
+  ],
+  "engines": {
+    "node": ">=20.19"
+  },
+  "scripts": {
+    "clean": "node scripts/clean.mjs",
+    "dev": "concurrently -k -n vite,electron \"npm:dev:vite\" \"npm:dev:electron\"",
+    "dev:vite": "vite",
+    "dev:electron": "wait-on http-get://localhost:5173 && npm run build:main && npm run build:preload && cross-env VITE_DEV_SERVER_URL=http://localhost:5173/ electron .",
+    "build": "npm run clean && npm run build:renderer && npm run build:main && npm run build:preload",
+    "build:renderer": "vite build",
+    "build:main": "tsc -p tsconfig.main.json && node scripts/write-oauth-config.mjs",
+    "build:preload": "tsc -p tsconfig.preload.json",
+    "start": "npm run build && electron .",
+    "package": "npm run build && electron-builder --config electron-builder.config.cjs --publish never",
+    "package:win": "npm run build && electron-builder --config electron-builder.config.cjs --win --publish never",
+    "package:mac": "npm run build && electron-builder --config electron-builder.config.cjs --mac --publish never",
+    "package:linux": "npm run build && electron-builder --config electron-builder.config.cjs --linux --publish never",
+    "typecheck": "tsc -p tsconfig.main.json --noEmit && tsc -p tsconfig.preload.json --noEmit && vue-tsc -p tsconfig.renderer.json --noEmit",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write \"src/**/*.{ts,vue,css}\" \"tests/**/*.ts\"",
+    "format:check": "prettier --check \"src/**/*.{ts,vue,css}\" \"tests/**/*.ts\"",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run lint && npm run typecheck && npm test",
+    "test:e2e": "npm run build && electron tests/e2e/smoke.cjs"
+  },
+  "dependencies": {
+    "@notionhq/client": "^2.3.0",
+    "bottleneck": "^2.19.5",
+    "electron-log": "^5.4.3",
+    "electron-store": "^8.2.0",
+    "electron-updater": "^6.8.11",
+    "lru-cache": "^10.4.3",
+    "markdown-it": "^15.0.3",
+    "sql.js": "^1.14.1",
+    "zod": "^4.6.7"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.5",
+    "@fontsource/inter": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
+    "@milkdown/crepe": "~7.22.3",
+    "@milkdown/kit": "~7.22.3",
+    "@types/node": "^20.12.0",
+    "@vitejs/plugin-vue": "^6.0.10",
+    "concurrently": "^8.2.2",
+    "cross-env": "^10.1.0",
+    "dotenv": "^16.4.7",
+    "electron": "^44.10.1",
+    "electron-builder": "^26.18.1",
+    "eslint": "^9.39.5",
+    "eslint-plugin-vue": "^10.12.0",
+    "globals": "^17.13.0",
+    "pinia": "^2.3.1",
+    "prettier": "^3.9.10",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.72.1",
+    "vite": "^7.3.7",
+    "vitest": "^4.1.12",
+    "vue": "^3.5.44",
+    "vue-eslint-parser": "^10.4.1",
+    "vue-tsc": "^3.3.14",
+    "wait-on": "^7.2.0"
+  }
+}

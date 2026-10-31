@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-main/
+dist-preload/
+dist-electron/
+*.tsbuildinfo
+
+# Secrets / local config — never commit these
+.env
+.env.*
+!.env.example
+*.p12
+*.pfx
+*.cer
+*.provisionprofile
+
+# Logs & coverage
+*.log
+npm-debug.log*
+coverage/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json

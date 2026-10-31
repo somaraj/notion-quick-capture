@@ -1,0 +1,6 @@
+# Feed used by the auto-updater in development (`NQC_DEV_UPDATES=1 npm run dev`).
+# Packaged builds get app-update.yml from the `publish` block in electron-builder.config.cjs.
+provider: github
+owner: somaraj
+repo: notion-quick-capture
+updaterCacheDirName: notion-quick-capture-updater

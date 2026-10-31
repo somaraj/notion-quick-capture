@@ -1,0 +1,88 @@
+name: CI
+
+# Every push (any branch) and every pull request: run the checks, then build installers for
+# Windows, macOS and Linux and attach them to the run as downloadable artifacts.
+# Tagged releases are handled separately by release.yml.
+on:
+  push:
+    branches: ['**']
+    tags-ignore: ['**']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Lint, typecheck, unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm test
+
+  build:
+    name: Build (${{ matrix.os }})
+    needs: check
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      # UI smoke tests: drive the built UI (incl. the editor) in Electron with a stubbed Notion bridge
+      - name: UI tests (Linux, virtual display)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a npx electron tests/e2e/smoke.cjs
+      - name: UI tests
+        if: runner.os != 'Linux'
+        run: npx electron tests/e2e/smoke.cjs
+
+      # Full installers, unsigned — these are development builds, not releases
+      - name: Package installers
+        run: npx electron-builder --config electron-builder.config.cjs --publish never
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+
+      - name: Short commit SHA
+        id: sha
+        shell: bash
+        run: echo "short=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload installers
+        uses: actions/upload-artifact@v4
+        with:
+          name: notion-quick-capture-${{ runner.os }}-${{ steps.sha.outputs.short }}
+          path: |
+            dist-electron/*.exe
+            dist-electron/*.dmg
+            dist-electron/*.zip
+            dist-electron/*.AppImage
+            dist-electron/*.deb
+          if-no-files-found: error
+          retention-days: 14
+          # Installers are already compressed
+          compression-level: 0
