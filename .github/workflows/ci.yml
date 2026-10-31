@@ -54,9 +54,11 @@ jobs:
       - run: npm run build
 
       # UI smoke tests: drive the built UI (incl. the editor) in Electron with a stubbed Notion bridge
+      # --no-sandbox must be on the command line: Ubuntu runners don't allow Chromium's sandbox
+      # for unprivileged users, and Electron checks it at launch, before the script runs
       - name: UI tests (Linux, virtual display)
         if: runner.os == 'Linux'
-        run: xvfb-run -a npx electron tests/e2e/smoke.cjs
+        run: xvfb-run -a npx electron --no-sandbox tests/e2e/smoke.cjs
       - name: UI tests
         if: runner.os != 'Linux'
         run: npx electron tests/e2e/smoke.cjs

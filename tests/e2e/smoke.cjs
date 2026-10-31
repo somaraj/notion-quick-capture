@@ -12,9 +12,6 @@ const assert = require('assert/strict');
 const ROOT = path.resolve(__dirname, '../..');
 const { markdownToBlocks } = require(path.join(ROOT, 'dist-main/shared/markdownToBlocks.js'));
 
-// GitHub's Ubuntu runners don't allow Chromium's sandbox for unprivileged users
-if (process.platform === 'linux' && process.env.CI) app.commandLine.appendSwitch('no-sandbox');
-
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 async function openPage(page, scenario) {
@@ -84,8 +81,15 @@ const tests = {
         assert.equal(blocks[1].bulleted_list_item.children[0].type, 'bulleted_list_item');
         assert.equal(blocks[3].code.language, 'typescript');
 
+        // The footer swaps in the notice after the hints fade out (Transition mode="out-in"),
+        // which can be slow in an offscreen window, so wait for it rather than sleeping
         const notice = await run(
-            `return document.querySelector('.status-success')?.textContent ?? '';`,
+            `for (let i = 0; i < 50; i++) {
+               const text = document.querySelector('.status-success')?.textContent;
+               if (text) return text;
+               await new Promise((r) => setTimeout(r, 100));
+             }
+             return '';`,
         );
         assert.match(notice, /Saved to Inbox/);
         assert.match(notice, /Open in Notion/);
