@@ -14,6 +14,7 @@
         No workspace connected. Paste an
         <a href="#" @click.prevent="openIntegrations">internal integration</a>
         secret, then share your pages or databases with it via <strong>⋯ → Connections</strong>.
+        <a href="#" @click.prevent="openSetupGuide">Step-by-step guide</a>
       </p>
       <form class="token-form" @submit.prevent="saveToken">
         <input
@@ -47,6 +48,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
+import { NOTION_INTEGRATIONS_URL, SETUP_GUIDE_URL } from '../../shared/links';
 
 const isAuthenticated = ref(false);
 const workspaceId = ref('');
@@ -66,7 +68,11 @@ async function loadAuth(): Promise<void> {
 }
 
 function openIntegrations(): void {
-  window.notionBridge.window.openExternal('https://www.notion.so/profile/integrations');
+  window.notionBridge.window.openExternal(NOTION_INTEGRATIONS_URL);
+}
+
+function openSetupGuide(): void {
+  window.notionBridge.window.openExternal(SETUP_GUIDE_URL);
 }
 
 async function saveToken(): Promise<void> {

@@ -23,6 +23,12 @@
           </li>
           <li>Paste the integration secret below</li>
         </ol>
+        <p class="auth-guide">
+          First time?
+          <a href="#" @click.prevent="openExternal(SETUP_GUIDE_URL)">
+            Follow the step-by-step guide
+          </a>
+        </p>
 
         <form class="token-form" @submit.prevent="saveToken">
           <input
@@ -51,7 +57,12 @@
 
         <p v-if="store.errorMessage" class="banner banner-error">
           <UiIcon name="alert" :size="15" />
-          <span>{{ store.errorMessage }}</span>
+          <span>
+            {{ store.errorMessage }}
+            <a href="#" @click.prevent="openExternal(SETUP_GUIDE_TROUBLESHOOTING_URL)">
+              Troubleshooting
+            </a>
+          </span>
         </p>
 
         <p class="auth-note">
@@ -234,6 +245,11 @@ import UiIcon from '../components/UiIcon.vue';
 import DestinationSearch from '../components/DestinationSearch.vue';
 import appIcon from '../../../build/icon.png';
 import type { DestinationRef, PropertyValue } from '../../shared/types';
+import {
+  NOTION_INTEGRATIONS_URL,
+  SETUP_GUIDE_TROUBLESHOOTING_URL,
+  SETUP_GUIDE_URL,
+} from '../../shared/links';
 
 const store = useUiStore();
 const { capture } = useNotion();
@@ -517,7 +533,11 @@ async function handleCapture(): Promise<void> {
 }
 
 function openIntegrations(): void {
-  window.notionBridge.window.openExternal('https://www.notion.so/profile/integrations');
+  openExternal(NOTION_INTEGRATIONS_URL);
+}
+
+function openExternal(url: string): void {
+  window.notionBridge.window.openExternal(url);
 }
 
 async function startOAuth(): Promise<void> {
@@ -1190,6 +1210,20 @@ kbd {
 .banner-error {
   background: rgba(239, 68, 68, 0.08);
   color: var(--color-error);
+}
+
+.banner-error a {
+  color: inherit;
+  font-weight: 600;
+}
+
+.auth-guide {
+  font-size: 12.5px;
+  color: var(--color-text-muted);
+}
+
+.auth-guide a {
+  color: var(--color-accent);
 }
 
 .auth-note {

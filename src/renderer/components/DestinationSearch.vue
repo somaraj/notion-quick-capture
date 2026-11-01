@@ -44,6 +44,7 @@
       <p class="empty-hint">
         Notion only shows pages connected to your integration. In Notion, open a page →
         <strong>⋯ → Connections</strong> → add your integration.
+        <a href="#" @click.prevent="openShareGuide">Show me how</a>
       </p>
     </div>
 
@@ -56,6 +57,7 @@ import { computed, onMounted, onUnmounted, ref } from 'vue';
 import UiIcon from './UiIcon.vue';
 import { getRecentDestinations } from '../lib/recentDestinations';
 import type { DestinationRef, SearchResult } from '../../shared/types';
+import { SETUP_GUIDE_SHARE_PAGE_URL } from '../../shared/links';
 
 const props = defineProps<{
   currentId?: string | null;
@@ -115,6 +117,10 @@ async function runSearch(text: string): Promise<void> {
       hasSearched.value = true;
     }
   }
+}
+
+function openShareGuide(): void {
+  window.notionBridge.window.openExternal(SETUP_GUIDE_SHARE_PAGE_URL);
 }
 
 function onInput(): void {
@@ -286,6 +292,10 @@ onUnmounted(() => {
   font-size: 12px;
   line-height: 1.5;
   color: var(--color-text-muted);
+}
+
+.empty-hint a {
+  color: var(--color-accent);
 }
 
 .error-text {

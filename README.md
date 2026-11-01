@@ -6,6 +6,8 @@
 
 Capture notes to Notion from anywhere. Press a global shortcut, type, hit <kbd>Ctrl</kbd>+<kbd>Enter</kbd> — the note lands in your Notion page or database, and you're back to what you were doing.
 
+🌐 **[notioncapture.somaraj.com](https://notioncapture.somaraj.com)**
+
 Runs quietly in the system tray on **Windows, macOS and Linux**.
 
 <p align="center">
@@ -64,7 +66,7 @@ to be signed in to GitHub; artifacts are kept for 14 days). These builds are unt
 
 ## Connect to Notion
 
-**New to Notion integrations? Follow the [step-by-step guide with screenshots](docs/connect-notion.md).**
+**New to Notion integrations? Follow the [step-by-step guide with screenshots](https://notioncapture.somaraj.com/connect/)** (also [on GitHub](docs/connect-notion.md)).
 
 Quick Capture uses a Notion **internal integration** that you create yourself. Your token stays on your computer and grants access only to the pages you choose. In short:
 
