@@ -43,11 +43,11 @@
           <span class="link-value">github.com/somaraj</span>
         </div>
       </a>
-      <a class="link-item" href="#" @click.prevent="openLink('https://discord.gg/fnH6KuX8')">
+      <a class="link-item" href="#" @click.prevent="openLink(DISCUSSIONS_URL)">
         <span class="link-icon">💬</span>
         <div class="link-text">
-          <span class="link-label">Discord</span>
-          <span class="link-value">Join Community</span>
+          <span class="link-label">Community</span>
+          <span class="link-value">GitHub Discussions</span>
         </div>
       </a>
       <a class="link-item" href="#" @click.prevent="openLink('https://twitter.com/nsomaraj')">
@@ -78,6 +78,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import appIcon from '../../../build/icon.png';
+import { DISCUSSIONS_URL } from '../../shared/links';
 
 const appVersion = __APP_VERSION__;
 const currentYear = computed(() => new Date().getFullYear());

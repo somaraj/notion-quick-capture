@@ -2,6 +2,7 @@
 
 export const WEBSITE_URL = 'https://notioncapture.somaraj.com';
 export const NOTION_INTEGRATIONS_URL = 'https://www.notion.so/profile/integrations';
+export const DISCUSSIONS_URL = 'https://github.com/somaraj/notion-quick-capture/discussions';
 
 // Anchors match GitHub's heading slugs in docs/connect-notion.md (the site page is built from it)
 export const SETUP_GUIDE_URL = `${WEBSITE_URL}/connect/`;
